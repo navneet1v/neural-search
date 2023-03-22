@@ -5,10 +5,12 @@
 
 package org.opensearch.neuralsearch.plugin;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.opensearch.client.Client;
@@ -23,7 +25,9 @@ import org.opensearch.ml.client.MachineLearningNodeClient;
 import org.opensearch.neuralsearch.ml.MLCommonsClientAccessor;
 import org.opensearch.neuralsearch.processor.TextEmbeddingProcessor;
 import org.opensearch.neuralsearch.processor.factory.TextEmbeddingProcessorFactory;
+import org.opensearch.neuralsearch.query.CompoundQueryBuilder;
 import org.opensearch.neuralsearch.query.NeuralQueryBuilder;
+import org.opensearch.neuralsearch.search.query.CompoundQueryPhaseSearcher;
 import org.opensearch.plugins.ActionPlugin;
 import org.opensearch.plugins.ExtensiblePlugin;
 import org.opensearch.plugins.IngestPlugin;
@@ -31,6 +35,7 @@ import org.opensearch.plugins.Plugin;
 import org.opensearch.plugins.SearchPlugin;
 import org.opensearch.repositories.RepositoriesService;
 import org.opensearch.script.ScriptService;
+import org.opensearch.search.query.QueryPhaseSearcher;
 import org.opensearch.threadpool.ThreadPool;
 import org.opensearch.watcher.ResourceWatcherService;
 
@@ -60,8 +65,9 @@ public class NeuralSearch extends Plugin implements ActionPlugin, SearchPlugin, 
     }
 
     public List<QuerySpec<?>> getQueries() {
-        return Collections.singletonList(
-            new QuerySpec<>(NeuralQueryBuilder.NAME, NeuralQueryBuilder::new, NeuralQueryBuilder::fromXContent)
+        return Arrays.asList(
+            new QuerySpec<>(NeuralQueryBuilder.NAME, NeuralQueryBuilder::new, NeuralQueryBuilder::fromXContent),
+            new QuerySpec<>(CompoundQueryBuilder.NAME, CompoundQueryBuilder::new, CompoundQueryBuilder::fromXContent)
         );
     }
 
@@ -69,5 +75,10 @@ public class NeuralSearch extends Plugin implements ActionPlugin, SearchPlugin, 
     public Map<String, Processor.Factory> getProcessors(Processor.Parameters parameters) {
         clientAccessor = new MLCommonsClientAccessor(new MachineLearningNodeClient(parameters.client));
         return Collections.singletonMap(TextEmbeddingProcessor.TYPE, new TextEmbeddingProcessorFactory(clientAccessor, parameters.env));
+    }
+
+    @Override
+    public Optional<QueryPhaseSearcher> getQueryPhaseSearcher() {
+        return Optional.of(new CompoundQueryPhaseSearcher());
     }
 }

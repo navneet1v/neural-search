@@ -147,10 +147,11 @@ dependencies {
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
     // ml-common excluded reflection for runtime so we need to add it by ourselves.
     // https://github.com/opensearch-project/ml-commons/commit/464bfe34c66d7a729a00dd457f03587ea4e504d9
-    // TODO: Remove following three lines of dependencies if ml-common include them in their jar
-    runtimeOnly group: 'org.reflections', name: 'reflections', version: '0.9.12'
-    runtimeOnly group: 'org.javassist', name: 'javassist', version: '3.29.2-GA'
-    runtimeOnly group: 'org.opensearch', name: 'common-utils', version: "${opensearch_build}"
+    // Need to comment out these to make sure that jar hell is not creating problem.
+    // Feel free to uncomment below if required.
+    //runtimeOnly group: 'org.reflections', name: 'reflections', version: '0.9.12'
+    //runtimeOnly group: 'org.javassist', name: 'javassist', version: '3.29.2-GA'
+    //runtimeOnly group: 'org.opensearch', name: 'common-utils', version: "${opensearch_build}"
 }
 
 // In order to add the jar to the classpath, we need to unzip the
