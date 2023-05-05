@@ -1,1 +1,2 @@
-artifacts/zip_tasb9.zip filter=lfs diff=lfs merge=lfs -text
+artifacts/flicker_model.zip filter=lfs diff=lfs merge=lfs -text
+artifacts/imdb_model.zip filter=lfs diff=lfs merge=lfs -text
